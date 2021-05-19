@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    {% if perms.article.add_article %}
+        <li><a href="{% url "article:add" %}">Создать статью</a></li>
+    {% endif %}
+
+    {% if perms.article.change_article %}
+        <li><a href="{% url "article:update" article.id %}">Редактировать статью</a></li>
+    {% endif %}
+
+    {% if perms.article.delete_article %}
+        <li><a href="{% url "article:delete" article.id %}">Удалить статью</a></li>
+    {% endif %}
+
+    {% if perms.article.add_comment %}
+        <li><a href="{% url "article:comment-create" article.id %}">Добавить Комментарий</a></li>
+    {% endif %}
+{% endblock menu %}
+
+{% block page_header %}Статья {{ article.id }}{% endblock page_header %}
+
+{% block content %}
+    <p>Title: {{ article.title }}</p>
+    <p>Author: {{ article.author }}</p>
+    <p>Content: {{ article.content }}</p>
+    <p>Tags: {% for tag in article.tags.all %}{{ tag.tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    {% if article.pk not in likes_articles %}
+    <a data-article_counter="article_counter{{ article.pk }}" onclick="likeArticle(event)" href="{% url 'article:like_article' article.pk %}"><i class="bi bi-heart"></i></a>
+    {% else %}
+    <a data-article_counter="article_counter{{ article.pk }}" onclick="unlikeArticle(event)"  href="{% url 'article:unlike_article' article.pk %}"><i class="bi bi-heart-fill"></i></a>
+    {% endif %}
+    <p id="article_counter{{ article.pk }}">{{ article.like_article.count }}</p>
+
+    <h2>Comments:</h2>
+    {% for comment in article.comments.all %}
+        <div>{{ comment.author }}: {{ comment.comment }}
+            {% if comment.pk not in likes_comments %}
+    <a data-comment_counter="comment_counter{{ comment.pk }}" onclick="likeComment(event)" href="{% url 'article:like_comment' comment.pk %}"><i class="bi bi-heart"></i></a>
+    {% else %}
+    <a data-comment_counter="comment_counter{{ comment.pk }}" onclick="unlikeComment(event)"  href="{% url 'article:unlike_comment' comment.pk %}"><i class="bi bi-heart-fill"></i></a>
+    {% endif %}
+    <p id="comment_counter{{ comment.pk }}">{{ comment.like_comment.count }}</p>
+        <div>
+    {% empty %}
+        <div>Нет комментариев :(</div>
+    {% endfor %}
+
+
+{% endblock content %}
