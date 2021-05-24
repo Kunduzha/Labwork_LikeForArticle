@@ -22,10 +22,16 @@ from django.conf import settings
 
 HOMEPAGE_URL = 'articles/'
 
+api_urls = [
+    # path('v1/', include('api_v1.urls')),
+    path('v2/', include('api_v2.urls')),
+]
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('articles/', include('article.urls')),
     path('accounts/', include('accounts.urls')),
+    path('api/', include(api_urls)),
     path('', RedirectView.as_view(url=HOMEPAGE_URL, permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
